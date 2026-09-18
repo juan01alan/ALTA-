@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Alta+</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --green-dark: #2d6a4f;
+    --green-mid: #40916c;
+    --green-light: #74c69d;
+    --teal: #38b2ac;
+    --blue-soft: #90cdf4;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f0fdf4; }
+  .screen { display: none; min-height: 100dvh; flex-direction: column; }
+  .screen.active { display: flex; }
+  .grad-bg { background: linear-gradient(160deg, #b2f5e8 0%, #bee3f8 100%); }
+  .btn-green { background: linear-gradient(90deg, #38b2ac, #2d6a4f); color: white; border: none; border-radius: 999px; padding: 14px 28px; font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-yellow { background: linear-gradient(90deg, #d4f01c, #a8d400); color: #1a1a1a; border: none; border-radius: 999px; padding: 14px 28px; font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-outline { background: transparent; border: 2px solid #2d6a4f; color: #2d6a4f; border-radius: 999px; padding: 12px 24px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+  .choice-btn { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #b2dfdb; border-radius: 14px; padding: 14px 18px; font-size: 16px; font-weight: 600; color: #1a3a30; cursor: pointer; width: 100%; margin-bottom: 10px; transition: border-color .2s, background .2s; }
+  .choice-btn.selected { border-color: #2d6a4f; background: #e8f5e9; }
+  .nav-bar { display: flex; justify-content: space-around; padding: 10px 0 6px; background: white; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; z-index: 10; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: #718096; cursor: pointer; padding: 4px 8px; }
+  .nav-item.active { color: #2d6a4f; font-weight: 700; }
+  .med-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .med-status { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .med-status button { display: flex; align-items: center; gap: 8px; background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 14px; cursor: pointer; width: 100%; }
+  .med-status button.taken { border-color: #38a169; background: #f0fff4; color: #276749; }
+  .med-status button.not-taken { border-color: #e53e3e; background: #fff5f5; color: #9b2c2c; }
+  .med-status button.forgot { border-color: #d69e2e; background: #fffff0; color: #744210; }
+  .progress-bar-wrap { background: #e2e8f0; border-radius: 999px; height: 12px; width: 100%; overflow: hidden; margin: 6px 0 16px; }
+  .progress-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #38b2ac, #2d6a4f); }
+  .top-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0; }
+  .logo-circle { background: white; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; color: #2d6a4f; border: 2px solid #b2dfdb; }
+  .section-card { background: rgba(255,255,255,0.65); border: 2px solid #b2dfdb; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+  .alert-box { background: #fff3cd; border: 2px solid #ffc107; border-radius: 14px; padding: 14px 16px; margin: 12px 0; }
+  input[type="text"] { border: 2px solid #b2dfdb; border-radius: 12px; padding: 12px 16px; font-size: 16px; width: 100%; background: rgba(255,255,255,0.8); outline: none; }
+  input[type="text"]:focus { border-color: #2d6a4f; }
+  .tag-green { background: #c6f6d5; color: #22543d; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+  .tag-orange { background: #feebc8; color: #7b341e; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="s-splash" class="screen active grad-bg" style="align-items:center;justify-content:center;padding:32px 24px;text-align:center;gap:16px;">
+  <div style="background:rgba(255,255,255,0.7);border-radius:30px;padding:20px 32px;">
+    <div style="font-size:56px;font-weight:900;color:#2d6a4f;">Alta +</div>
+    <div style="font-size:16px;color:#40916c;margin-top:4px;">Alta segura. Mais autonomia</div>
+  </div>
+  <div style="font-size:64px;margin:12px 0;">🩺</div>
+  <div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#2d6a4f;text-transform:uppercase;">Cuidado que continua em casa</div>
+  <p style="color:#276749;font-size:15px;margin:0;">Apoio para uma alta mais segura e mais autonomia.</p>
+  <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin:8px 0;">
+    <span style="font-size:24px;">🏠</span>
+    <span style="font-size:15px;color:#2d6a4f;font-weight:500;">Seu cuidado começa aqui.</span>
+    <span style="font-size:22px;">👨‍⚕️</span>
+  </div>
+  <button class="btn-green" onclick="go('s-login')">➕ Começar</button>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="s-login" class="screen grad-bg" style="padding:24px;gap:20px;">
+  <div class="top-header" style="padding:0;">
+    <div style="font-size:22px;">🩺</div>
+    <div class="logo-circle">ALTA+</div>
+    <div style="font-size:22px;">➕</div>
+  </div>
+  <div style="text-align:center;margin-top:16px;">
+    <h1 style="font-size:32px;font-weight:800;color:#2d6a4f;margin:0 0 12px;">Vamos começar?</h1>
+    <p style="color:#40916c;font-size:15px;margin:0;">Para acessar seu plano de cuidados, utilize o código fornecido pela equipe de saúde.</p>
+  </div>
+  <div style="background:rgba(255,255,255,0.7);border-radius:16px;padding:16px;">
+    <p style="font-size:14px;color:#40916c;margin:0 0 8px;">Ou digite aqui seu código:</p>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-weight:700;color:#2d6a4f;font-size:16px;">ALTA:</span>
+      <input type="text" id="code-input" placeholder="Ex: 1234" style="flex:1;">
+    </div>
+    <p id="code-error" style="color:#e53e3e;font-size:13px;margin:6px 0 0;display:none;">Digite um código válido.</p>
+  </div>
+  <button class="btn-yellow" onclick="doLogin()">Acessar meu plano</button>
+  <div style="text-align:center;display:flex;flex-direction:column;gap:8px;">
+    <button class="btn-outline" onclick="go('s-help')">Preciso de ajuda</button>
+    <button style="background:none;border:none;color:#40916c;font-size:14px;cursor:pointer;" onclick="alert('Contate a equipe de saúde para recuperar seu código.')">Esqueci meu código</button>
+  </div>
+</div>
+
+<!-- ===== AJUDA ===== -->
+<div id="s-help" class="screen grad-bg" style="padding:24px;gap:16px;">
+  <div class="top-header" style="padding:0;"><div style="font-size:22px;">🩺</div><div class="logo-circle">ALTA+</div><div style="font-size:22px;">➕</div></div>
+  <h2 style="text-align:center;color:#2d6a4f;font-size:26px;font-weight:800;">Veja aqui os canais para pedir ajuda:</h2>
+  <div class="section-card" style="display:flex;flex-direction:column;gap:10px;">
+    <div style="font-size:17px;font-weight:700;color:#2d6a4f;">📞 Telefone: (00) 0000-0000</div>
+    <div style="font-size:17px;font-weight:700;color:#2d6a4f;">📞 Telefone: (00) 0000-0000</div>
+    <div style="font-size:17px;font-weight:700;color:#2d6a4f;">💬 WhatsApp: (00) 0000-0000</div>
+  </div>
+  <button style="font-size:48px;background:none;border:none;cursor:pointer;" onclick="falarTexto('Telefone: zero zero, zero zero zero zero, zero zero zero zero. WhatsApp: zero zero, zero zero zero zero, zero zero zero zero.')">🔊</button>
+  <button class="btn-outline" onclick="go('s-login')">← Voltar</button>
+</div>
+
+<!-- ===== AVALIAÇÃO INTRO ===== -->
+<div id="s-aval-intro" class="screen grad-bg" style="padding:24px;gap:16px;">
+  <div class="top-header" style="padding:0;"><span style="font-size:24px;">🏠</span><div class="logo-circle">ALTA+</div><span style="font-size:24px;">📋</span></div>
+  <div style="text-align:center;margin-top:8px;">
+    <h2 style="font-size:26px;font-weight:800;color:#2d6a4f;">Estou preparado para voltar para casa?</h2>
+    <p style="color:#276749;font-size:16px;">Vamos fazer uma avaliação rápida para identificar se você precisa de algum apoio antes da alta.</p>
+  </div>
+  <div style="display:flex;justify-content:center;gap:32px;font-size:56px;">📋 💊</div>
+  <button class="btn-green" onclick="go('s-aval-q1')">Continuar</button>
+</div>
+
+<!-- ===== AVALIAÇÃO Q1+Q2 ===== -->
+<div id="s-aval-q1" class="screen grad-bg" style="padding:24px;gap:14px;">
+  <div class="top-header" style="padding:0;"><span style="font-size:24px;">🏠</span><div class="logo-circle">ALTA+</div><span style="font-size:24px;">📋</span></div>
+  <div class="section-card">
+    <h3 style="font-size:17px;font-weight:800;color:#1a3a30;text-align:center;margin:0 0 12px;">Consigo realizar minhas atividades?</h3>
+    <button class="choice-btn" onclick="selectChoice(this,'q1')"><span>🟢</span> Sozinho</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q1')"><span>🟡</span> Com alguma ajuda</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q1')"><span>🔴</span> Preciso de muita ajuda</button>
+  </div>
+  <div class="section-card">
+    <h3 style="font-size:17px;font-weight:800;color:#1a3a30;text-align:center;margin:0 0 12px;">Sei o que preciso fazer em casa?</h3>
+    <button class="choice-btn" onclick="selectChoice(this,'q2')"><span>🟢</span> Sim</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q2')"><span>🟡</span> Tenho algumas dúvidas</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q2')"><span>🔴</span> Não</button>
+  </div>
+  <p id="q1-error" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;">Responda as duas perguntas antes de continuar.</p>
+  <button class="btn-green" onclick="nextAval('q1','q2','s-aval-q3')">Continuar</button>
+</div>
+
+<!-- ===== AVALIAÇÃO Q3+Q4 ===== -->
+<div id="s-aval-q3" class="screen grad-bg" style="padding:24px;gap:14px;">
+  <div class="top-header" style="padding:0;"><span style="font-size:24px;">🏠</span><div class="logo-circle">ALTA+</div><span style="font-size:24px;">📋</span></div>
+  <div class="section-card">
+    <h3 style="font-size:17px;font-weight:800;color:#1a3a30;text-align:center;margin:0 0 12px;">Como estou me sentindo com a alta?</h3>
+    <button class="choice-btn" onclick="selectChoice(this,'q3')"><span>😊</span> Tranquilo</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q3')"><span>😐</span> Inseguro</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q3')"><span>😟</span> Muito preocupado</button>
+  </div>
+  <div class="section-card">
+    <h3 style="font-size:17px;font-weight:800;color:#1a3a30;text-align:center;margin:0 0 12px;">Tenho alguém para me ajudar quando precisar?</h3>
+    <button class="choice-btn" onclick="selectChoice(this,'q4')"><span>🟢</span> Sim</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q4')"><span>🟡</span> Às vezes</button>
+    <button class="choice-btn" onclick="selectChoice(this,'q4')"><span>🔴</span> Não</button>
+  </div>
+  <p id="q3-error" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;">Responda as duas perguntas antes de continuar.</p>
+  <button class="btn-green" onclick="nextAval('q3','q4','s-resultado')">Continuar</button>
+</div>
+
+<!-- ===== RESULTADO ===== -->
+<div id="s-resultado" class="screen grad-bg" style="padding:24px;gap:16px;align-items:center;">
+  <div class="logo-circle" style="width:72px;height:72px;font-size:20px;">ALTA+</div>
+  <h2 style="font-size:30px;font-weight:800;color:#2d6a4f;text-align:center;margin:0;">Seu resultado</h2>
+  <div id="resultado-body" style="width:100%;"></div>
+  <button class="btn-green" style="margin-top:8px;" onclick="go('s-home')">Continuar</button>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="s-home" class="screen" style="background:#f0fdf4;flex:1;">
+  <div style="padding:16px;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:12px;">
+      <div></div>
+      <div class="logo-circle">ALTA+</div>
+      <button style="background:none;border:none;font-size:14px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button>
+    </div>
+    <h2 id="home-greeting" style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 2px;"></h2>
+    <p id="home-date" style="font-size:13px;color:#40916c;margin:0 0 12px;"></p>
+    <div style="font-size:16px;font-weight:700;color:#1a3a30;display:flex;align-items:center;gap:8px;">👤 O que preciso fazer hoje? <span style="font-size:20px;">🕐</span></div>
+  </div>
+  <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;">
+    <div style="background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+      <div style="font-size:15px;font-weight:700;color:#2d6a4f;">💊 Medicamentos</div>
+      <div style="font-size:13px;color:#718096;margin:4px 0 10px;" id="med-count">3 tarefas hoje</div>
+      <button class="btn-green" style="font-size:13px;padding:8px;" onclick="go('s-meds')">Clique para ver</button>
+    </div>
+    <div style="background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+      <div style="font-size:15px;font-weight:700;color:#2d6a4f;">🩹 Cuidados</div>
+      <div style="font-size:13px;color:#718096;margin:4px 0 10px;">2 tarefas hoje</div>
+      <button class="btn-green" style="font-size:13px;padding:8px;" onclick="go('s-meexplique')">Clique para ver</button>
+    </div>
+    <div style="background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+      <div style="font-size:15px;font-weight:700;color:#2d6a4f;">📅 Consultas</div>
+      <div style="font-size:13px;color:#718096;margin:4px 0 10px;">1 compromisso</div>
+      <button class="btn-green" style="font-size:13px;padding:8px;" onclick="go('s-consultas')">Clique para ver</button>
+    </div>
+    <div style="background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+      <div style="font-size:15px;font-weight:700;color:#2d6a4f;">🧘 Atividades</div>
+      <div style="font-size:13px;color:#718096;margin:4px 0 10px;">2 atividades</div>
+      <button class="btn-green" style="font-size:13px;padding:8px;" onclick="go('s-atividades')">Clique para ver</button>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item active" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== MEDICAMENTOS ===== -->
+<div id="s-meds" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">💊 Meus medicamentos</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Verifique aqui seu cronograma</p>
+  </div>
+  <div style="padding:16px;overflow-y:auto;flex:1;" id="meds-list"></div>
+  <div class="alert-box" style="margin:0 16px 12px;">
+    ⚠️ <strong>Não tome outra dose por conta própria.</strong> Consulte as orientações recebidas ou entre em contato com a equipe de saúde.
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active" onclick="go('s-meds')"><span>📋</span>Medicamentos</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== ME EXPLIQUE ===== -->
+<div id="s-meexplique" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">🧠 Me explique</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Encontre orientações de forma simples e acessível.</p>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;">
+    <button class="choice-btn" style="font-size:17px;" onclick="alert('Vídeo de orientação disponível em breve.')">🎥 Assistir vídeo</button>
+    <button class="choice-btn" style="font-size:17px;" onclick="go('s-passo-a-passo')">🖼 Ver passo a passo</button>
+    <button class="choice-btn" style="font-size:17px;" onclick="falarTexto('Cuide-se bem em casa. Tome seus medicamentos nos horários indicados. Em caso de dúvida, contate a equipe de saúde.')">🔊 Ouvir orientação</button>
+    <button class="choice-btn" style="font-size:17px;" onclick="aumentarTexto()">🔠 Aumentar texto</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== PASSO A PASSO ===== -->
+<div id="s-passo-a-passo" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0;">🧠 Me explique</h2>
+    <p style="font-size:13px;color:#40916c;margin:4px 0 12px;">Como realizar meu cuidado</p>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto;">
+    <p style="font-size:17px;font-weight:700;color:#1a3a30;text-align:center;">Veja aqui o passo a passo geral do seu cuidado</p>
+    <div style="display:flex;justify-content:center;gap:20px;font-size:40px;margin:12px 0;">▶️ 📄 🔊</div>
+    <div class="section-card" style="background:white;">
+      <div style="font-weight:800;color:#2d6a4f;margin-bottom:8px;">Passo 1 — Medicamentos</div>
+      <p style="margin:0;font-size:15px;color:#276749;">Tome seus medicamentos nos horários indicados. Marque no app se já tomou.</p>
+    </div>
+    <div class="section-card" style="background:white;">
+      <div style="font-weight:800;color:#2d6a4f;margin-bottom:8px;">Passo 2 — Cuidados em casa</div>
+      <p style="margin:0;font-size:15px;color:#276749;">Siga as orientações da equipe. Em caso de dúvida, use o botão "Preciso de ajuda".</p>
+    </div>
+    <div class="section-card" style="background:white;">
+      <div style="font-weight:800;color:#2d6a4f;margin-bottom:8px;">Passo 3 — Consultas e atividades</div>
+      <p style="margin:0;font-size:15px;color:#276749;">Compareça às consultas agendadas e realize as atividades indicadas.</p>
+    </div>
+    <p style="text-align:center;font-size:15px;color:#40916c;">Clique abaixo caso haja dúvida ou deseje falar com a equipe</p>
+    <div style="text-align:center;font-size:40px;">📞</div>
+    <button class="btn-outline" style="margin-top:8px;" onclick="go('s-help')">Contatar equipe</button>
+    <button class="btn-outline" style="margin-top:8px;" onclick="go('s-meexplique')">← Voltar</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== EU ENTENDI ===== -->
+<div id="s-eu-entendi" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:22px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">Eu entendi? 💬</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Responda algumas perguntas rápidas.</p>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+    <div class="section-card" style="background:white;">
+      <h4 style="font-size:15px;font-weight:700;color:#1a3a30;margin:0 0 10px;">Quando devo realizar meu cuidado?</h4>
+      <button class="choice-btn" onclick="selectChoice(this,'eq1')">🔘 Pela manhã</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq1')">🔘 À noite</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq1')">🔘 Nos horários orientados pela equipe ✅</button>
+    </div>
+    <div class="section-card" style="background:white;">
+      <h4 style="font-size:15px;font-weight:700;color:#1a3a30;margin:0 0 10px;">Sei os horários da medicação? 💊</h4>
+      <button class="choice-btn" onclick="selectChoice(this,'eq2')">🟢 Sim</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq2')">🟡 Com alguma ajuda</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq2')">🔴 Ainda tenho dúvida</button>
+    </div>
+    <div class="section-card" style="background:white;">
+      <h4 style="font-size:15px;font-weight:700;color:#1a3a30;margin:0 0 10px;">Conheço minhas consultas e atividades?</h4>
+      <button class="choice-btn" onclick="selectChoice(this,'eq3')">🟢 Sim</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq3')">🟡 Com alguma ajuda</button>
+      <button class="choice-btn" onclick="selectChoice(this,'eq3')">🔴 Ainda tenho dúvida</button>
+    </div>
+    <p id="eq-error" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;">Responda todas as perguntas.</p>
+    <button class="btn-green" onclick="checkEntendi()">Continuar</button>
+    <div id="entendi-result" style="display:none;"></div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== ALGO DIFERENTE ===== -->
+<div id="s-algo-diferente" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#e53e3e;margin:0 0 4px;">⚠️ Algo está diferente?</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Veja os sinais de alerta que sua equipe orientou observar.</p>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto;">
+    <div style="background:#fff5f5;border:2px solid #fed7d7;border-radius:14px;padding:14px;margin-bottom:14px;">
+      <p style="font-weight:800;color:#c53030;margin:0 0 10px;">🚨 Procure atendimento imediatamente se apresentar:</p>
+      <ul style="color:#742a2a;font-size:15px;line-height:1.8;margin:0;padding-left:20px;">
+        <li>Alteração súbita da fala</li>
+        <li>Nova fraqueza em um lado do corpo</li>
+        <li>Perda súbita de equilíbrio</li>
+        <li>Alteração importante da consciência</li>
+        <li>Outros sinais definidos pela equipe</li>
+      </ul>
+    </div>
+    <button class="btn-green" style="background:linear-gradient(90deg,#e53e3e,#9b2c2c);" onclick="alert('Em caso de emergência, ligue para o SAMU: 192 ou Bombeiros: 193.')">🔴 PRECISO DE ATENDIMENTO</button>
+    <div style="margin-top:12px;background:#e8f5e9;border-radius:12px;padding:12px;font-size:14px;color:#276749;text-align:center;">
+      Em caso de emergência, procure um serviço de emergência ou ligue para o serviço de emergência da sua região.
+    </div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== PRECISO DE AJUDA (IN-APP) ===== -->
+<div id="s-preciso-ajuda" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:22px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">🆘 Preciso de ajuda</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">O que está acontecendo?</p>
+  </div>
+  <div style="padding:16px;flex:1;display:flex;flex-direction:column;gap:10px;">
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-meds')">💊 Tenho dúvida sobre meu medicamento</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-meexplique')">🩹 Tenho dificuldade com um cuidado</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-passo-a-passo')">🧠 Não entendi minha orientação</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-algo-diferente')">😟 Estou inseguro / algo diferente</button>
+    <div style="height:1px;background:#e2e8f0;margin:8px 0;"></div>
+    <button class="btn-green" onclick="go('s-help')">🟣 Entrar em contato com minha rede de apoio</button>
+    <p style="text-align:center;font-size:14px;color:#40916c;margin:0;">Preciso de ajuda. Preciso falar com alguém.</p>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== MEU CUIDADO ===== -->
+<div id="s-meu-cuidado" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 12px;">📋 Meu cuidado</h2>
+  </div>
+  <div style="padding:16px;flex:1;display:flex;flex-direction:column;gap:12px;">
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-meexplique')">🧠 Me explique — orientações</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-eu-entendi')">❓ Eu entendi?</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-algo-diferente')">⚠️ Algo está diferente?</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-preciso-ajuda')">🆘 Preciso de ajuda</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-progresso')">💜 Meu progresso</button>
+    <button class="choice-btn" style="font-size:15px;" onclick="go('s-encerramento')">✓ Encerrar acompanhamento</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== CONSULTAS ===== -->
+<div id="s-consultas" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">💜 Acompanhe suas consultas</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Veja quais são suas consultas aqui</p>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto;" id="consultas-list"></div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== ATIVIDADES ===== -->
+<div id="s-atividades" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">💜 Acompanhe suas atividades</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Veja aqui quais são suas atividades</p>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+    <div class="med-card"><div style="font-size:15px;font-weight:700;color:#2d6a4f;">Atividade 1 — Memória</div><p style="font-size:14px;color:#276749;margin:6px 0 0;">Lembrar o que fez no dia anterior ou contar uma história da infância.</p></div>
+    <div class="med-card"><div style="font-size:15px;font-weight:700;color:#2d6a4f;">Atividade 2 — Caminhadas simples</div><p style="font-size:14px;color:#276749;margin:6px 0 0;">Faça uma caminhada curta e tranquila próximo de casa.</p></div>
+    <div class="med-card"><div style="font-size:15px;font-weight:700;color:#2d6a4f;">Atividade 3 — Arte</div><p style="font-size:14px;color:#276749;margin:6px 0 0;">Fazer desenhos, pinturas ou colagens.</p></div>
+    <button class="btn-outline" onclick="go('s-home')">← Voltar</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== LEMBRETES ===== -->
+<div id="s-lembretes" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 12px;">🔔 Lembretes</h2>
+  </div>
+  <div style="padding:16px;flex:1;" id="lembretes-list"></div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item active"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== FAMÍLIA ===== -->
+<div id="s-familia" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">👥 Modo família</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Seu familiar ou cuidador pode acompanhar seu plano de cuidados quando você autorizar.</p>
+  </div>
+  <div style="padding:16px;flex:1;display:flex;flex-direction:column;gap:12px;">
+    <div class="section-card" style="background:white;">
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;margin-bottom:10px;">Compartilhar com familiar:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:10px;font-size:15px;color:#276749;"><input type="checkbox" checked style="width:18px;height:18px;accent-color:#2d6a4f;"> ☑️ Medicamentos</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:15px;color:#276749;"><input type="checkbox" checked style="width:18px;height:18px;accent-color:#2d6a4f;"> ☑️ Consulta</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:15px;color:#276749;"><input type="checkbox" style="width:18px;height:18px;accent-color:#2d6a4f;"> ☐ Atividade pendente</label>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:15px;font-weight:600;color:#2d6a4f;">Ver as explicações</div>
+    <div style="display:flex;justify-content:center;gap:24px;font-size:36px;">▶️ 📄 🔊</div>
+    <div style="text-align:center;font-size:13px;color:#40916c;">🔐 Acesso autorizado pelo paciente</div>
+    <button class="btn-green" onclick="alert('Código de acesso compartilhado com familiar!')">Autorizar acesso familiar</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item active"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== PROGRESSO ===== -->
+<div id="s-progresso" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px 16px 0;background:linear-gradient(160deg,#b2f5e8,#bee3f8);">
+    <div class="top-header" style="padding:0;margin-bottom:8px;"><div></div><div class="logo-circle">ALTA+</div><button style="background:none;border:none;font-size:13px;color:#2d6a4f;font-weight:700;cursor:pointer;" onclick="go('s-perfil')">⚙️ Perfil</button></div>
+    <h2 style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 4px;">💜 Seu progresso</h2>
+    <p style="font-size:13px;color:#40916c;margin:0 0 12px;">Acompanhe aqui</p>
+  </div>
+  <div style="padding:16px;flex:1;" id="progresso-body"></div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item active"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== PERFIL ===== -->
+<div id="s-perfil" class="screen" style="background:#f0fdf4;">
+  <div style="padding:16px;background:linear-gradient(160deg,#b2f5e8,#bee3f8);display:flex;flex-direction:column;align-items:center;gap:8px;">
+    <div style="width:72px;height:72px;border-radius:50%;background:#2d6a4f;display:flex;align-items:center;justify-content:center;font-size:32px;color:white;font-weight:800;" id="perfil-avatar">👤</div>
+    <h2 id="perfil-nome" style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0;"></h2>
+    <div id="perfil-codigo" style="font-size:13px;color:#40916c;"></div>
+  </div>
+  <div style="padding:16px;flex:1;display:flex;flex-direction:column;gap:12px;">
+    <div class="med-card">
+      <p style="font-size:14px;font-weight:700;color:#2d6a4f;margin:0 0 8px;">Editar nome:</p>
+      <input type="text" id="perfil-nome-input" placeholder="Seu nome" style="margin-bottom:8px;">
+      <button class="btn-green" style="font-size:14px;padding:10px;" onclick="salvarPerfil()">Salvar</button>
+    </div>
+    <button class="choice-btn" onclick="go('s-aval-intro')">📋 Refazer avaliação inicial</button>
+    <button class="choice-btn" style="border-color:#e53e3e;color:#e53e3e;" onclick="logout()">🚪 Sair / Trocar usuário</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="go('s-home')"><span>🏠</span>Início</div>
+    <div class="nav-item" onclick="go('s-meu-cuidado')"><span>📋</span>Meu cuidado</div>
+    <div class="nav-item" onclick="go('s-lembretes')"><span>🔔</span>Lembretes</div>
+    <div class="nav-item" onclick="go('s-familia')"><span>👥</span>Família</div>
+  </div>
+</div>
+
+<!-- ===== ENCERRAMENTO ===== -->
+<div id="s-encerramento" class="screen grad-bg" style="padding:24px;gap:16px;align-items:center;justify-content:center;text-align:center;">
+  <div class="logo-circle" style="width:72px;height:72px;font-size:20px;">ALTA+</div>
+  <h2 style="font-size:28px;font-weight:800;color:#2d6a4f;margin:0;">💜 Você chegou até aqui!</h2>
+  <p style="color:#276749;font-size:16px;">Seu período de acompanhamento pelo ALTA+ está chegando ao fim.</p>
+  <div style="width:100%;display:flex;flex-direction:column;gap:10px;text-align:left;">
+    <div style="background:rgba(255,255,255,0.7);border-radius:14px;padding:14px;font-size:15px;color:#276749;">🏠 Continue seguindo as orientações da sua equipe de saúde.</div>
+    <div style="background:rgba(255,255,255,0.7);border-radius:14px;padding:14px;font-size:15px;color:#276749;">📅 Mantenha suas consultas e acompanhamentos.</div>
+    <div style="background:rgba(255,255,255,0.7);border-radius:14px;padding:14px;font-size:15px;color:#276749;">🆘 Em caso de necessidade, procure a rede de saúde indicada pela sua equipe.</div>
+  </div>
+  <button class="btn-outline" onclick="go('s-home')">🟣 Voltar para início</button>
+  <button class="btn-outline" onclick="go('s-help')">🟣 Entrar em contato com atendimento</button>
+  <button class="btn-green" onclick="confirmarEncerramento()">✓ Finalizar acompanhamento</button>
+  <p style="font-size:12px;font-style:italic;color:#40916c;">"Mais autonomia. Mais segurança. Cuidado que continua em casa."</p>
+</div>
+
+<!-- ===== FIM ===== -->
+<div id="s-fim" class="screen grad-bg" style="padding:24px;gap:16px;align-items:center;justify-content:center;text-align:center;">
+  <div class="logo-circle" style="width:72px;height:72px;font-size:20px;">ALTA+</div>
+  <h2 style="font-size:28px;font-weight:800;color:#2d6a4f;margin:0;">💜 Você chegou até aqui!</h2>
+  <p style="color:#276749;font-size:16px;">Parabéns pelo seu progresso, encerramos aqui nossa parceria.</p>
+  <div style="font-size:60px;">⏻</div>
+  <h3 style="font-size:28px;font-weight:900;color:#1a3a30;">Encerramos aqui</h3>
+  <p style="font-size:15px;color:#276749;">🏠 Continue seguindo as orientações da sua equipe de saúde.</p>
+  <p style="font-size:12px;font-style:italic;color:#40916c;">"Mais autonomia. Mais segurança. Cuidado que continua."</p>
+</div>
+
+<script>
+// ===== STATE & STORAGE =====
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem('altamais_'+k)); } catch(e) { return null; } },
+  set: (k,v) => { try { localStorage.setItem('altamais_'+k, JSON.stringify(v)); } catch(e) {} }
+};
+
+let state = {
+  nome: '',
+  codigo: '',
+  loggedIn: false,
+  avalRespostas: {},
+  medStatus: {},
+  fontSize: 1
+};
+
+function loadState() {
+  const saved = LS.get('state');
+  if (saved) Object.assign(state, saved);
+}
+function saveState() { LS.set('state', state); }
+
+// ===== NAVIGATION =====
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('active');
+  el.scrollTop = 0;
+  // render dynamic screens
+  if (id === 's-home') renderHome();
+  if (id === 's-meds') renderMeds();
+  if (id === 's-consultas') renderConsultas();
+  if (id === 's-lembretes') renderLembretes();
+  if (id === 's-progresso') renderProgresso();
+  if (id === 's-perfil') renderPerfil();
+  if (id === 's-resultado') renderResultado();
+}
+
+// ===== LOGIN =====
+function doLogin() {
+  const inp = document.getElementById('code-input');
+  const err = document.getElementById('code-error');
+  const val = inp.value.trim();
+  if (!val) { err.style.display='block'; return; }
+  err.style.display='none';
+  state.codigo = val;
+  state.loggedIn = true;
+  if (!state.nome) state.nome = 'Paciente';
+  saveState();
+  // first login → avaliação; returning → home
+  const hasAval = Object.keys(state.avalRespostas).length >= 4;
+  go(hasAval ? 's-home' : 's-aval-intro');
+}
+
+// ===== AVALIAÇÃO =====
+const choices = {};
+function selectChoice(btn, group) {
+  btn.closest('.screen').querySelectorAll(`[onclick*="'${group}'"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  choices[group] = btn.textContent.trim();
+  state.avalRespostas[group] = btn.textContent.trim();
+  saveState();
+}
+
+function nextAval(g1, g2, next) {
+  const e1 = document.getElementById(g1+'-error') || document.getElementById('q1-error') || document.getElementById('q3-error');
+  if (!choices[g1] || !choices[g2]) {
+    const errEl = next === 's-resultado' ? document.getElementById('q3-error') : document.getElementById('q1-error');
+    if (errEl) errEl.style.display = 'block';
+    return;
+  }
+  if (e1) e1.style.display = 'none';
+  go(next);
+}
+
+function renderResultado() {
+  const el = document.getElementById('resultado-body');
+  const r = state.avalRespostas;
+  const alerts = [];
+  if (r.q1 && r.q1.includes('muita ajuda')) alerts.push('Dificuldade para realizar atividades');
+  if (r.q2 && (r.q2.includes('dúvidas') || r.q2.includes('Não'))) alerts.push('Dúvidas sobre os cuidados em casa');
+  if (r.q3 && r.q3.includes('preocupado')) alerts.push('Insegurança com a alta');
+  if (r.q4 && r.q4.includes('Não')) alerts.push('Sem rede de apoio em casa');
+
+  if (alerts.length === 0) {
+    el.innerHTML = `<div style="background:#c6f6d5;border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:40px;">✅</div>
+      <h3 style="color:#22543d;margin:8px 0 4px;">Muito bem!</h3>
+      <p style="color:#276749;margin:0;">Você está preparado para a alta. Continue seguindo as orientações da sua equipe.</p>
+    </div>`;
+  } else {
+    el.innerHTML = `<div style="background:white;border-radius:14px;padding:16px;width:100%;">
+      <div style="font-size:15px;font-weight:700;color:#c05621;margin-bottom:8px;">⚠️ Pontos que precisam de atenção</div>
+      <ul style="margin:0;padding-left:20px;color:#744210;font-size:14px;line-height:2;">${alerts.map(a=>`<li>${a}</li>`).join('')}</ul>
+      <div style="margin-top:14px;text-align:center;">
+        <button class="btn-outline" onclick="go('s-meexplique')" style="font-size:14px;">🟣 Revisar orientações</button>
+      </div>
+    </div>`;
+  }
+}
+
+// ===== HOME =====
+function renderHome() {
+  document.getElementById('home-greeting').textContent = `Olá, ${state.nome || 'Paciente'}! 👋`;
+  const now = new Date();
+  document.getElementById('home-date').textContent = `Hoje, ${now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}`;
+  const meds = LS.get('meds') || defaultMeds();
+  const taken = meds.filter(m => state.medStatus && state.medStatus[m.id] === 'taken').length;
+  document.getElementById('med-count').textContent = `${meds.length - taken} pendente(s) hoje`;
+}
+
+// ===== MEDS =====
+function defaultMeds() {
+  return [
+    {id:'med1', nome:'Medicamento 1', dose:'1 comprimido', horario:'08h'},
+    {id:'med2', nome:'Medicamento 2', dose:'2 comprimidos', horario:'14h'},
+    {id:'med3', nome:'Medicamento 3', dose:'1 comprimido', horario:'20h'}
+  ];
+}
+
+function renderMeds() {
+  const meds = LS.get('meds') || defaultMeds();
+  const el = document.getElementById('meds-list');
+  el.innerHTML = meds.map(m => {
+    const s = (state.medStatus && state.medStatus[m.id]) || '';
+    return `<div class="med-card">
+      <div style="font-size:18px;font-weight:800;color:#2d6a4f;">${m.horario} 🕐</div>
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;margin:4px 0 2px;">💊 ${m.nome}</div>
+      <div style="font-size:13px;color:#718096;margin-bottom:8px;">${m.dose}</div>
+      <div class="med-status">
+        <button class="${s==='taken'?'taken':''}" onclick="setMedStatus('${m.id}','taken',this)">✅ Já tomei</button>
+        <button class="${s==='not-taken'?'not-taken':''}" onclick="setMedStatus('${m.id}','not-taken',this)">❌ Ainda não tomei</button>
+        <button class="${s==='forgot'?'forgot':''}" onclick="setMedStatus('${m.id}','forgot',this)">❓ Não lembro se tomei</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setMedStatus(id, status, btn) {
+  if (!state.medStatus) state.medStatus = {};
+  state.medStatus[id] = status;
+  saveState();
+  // visual update
+  const card = btn.closest('.med-card');
+  card.querySelectorAll('.med-status button').forEach(b => { b.classList.remove('taken','not-taken','forgot'); });
+  if (status==='taken') btn.classList.add('taken');
+  if (status==='not-taken') btn.classList.add('not-taken');
+  if (status==='forgot') btn.classList.add('forgot');
+}
+
+// ===== CONSULTAS =====
+function renderConsultas() {
+  const el = document.getElementById('consultas-list');
+  el.innerHTML = `
+    <div class="med-card">
+      <div style="font-size:14px;color:#718096;margin-bottom:4px;">Consulta 1</div>
+      <div style="font-size:20px;font-weight:800;color:#2d6a4f;">Dia: 00/00/0000</div>
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;">Horário: 00:00</div>
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;">Local: Seu hospital 🏥</div>
+    </div>
+    <div class="med-card">
+      <div style="font-size:14px;color:#718096;margin-bottom:4px;">Consulta 2</div>
+      <div style="font-size:20px;font-weight:800;color:#2d6a4f;">Dia: 00/00/0000</div>
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;">Horário: 00:00</div>
+      <div style="font-size:15px;font-weight:700;color:#1a3a30;">Local: Seu hospital 🏥</div>
+    </div>
+    <button class="btn-outline" style="margin-top:8px;" onclick="go('s-home')">← Voltar</button>
+  `;
+}
+
+// ===== LEMBRETES =====
+function renderLembretes() {
+  const el = document.getElementById('lembretes-list');
+  const meds = LS.get('meds') || defaultMeds();
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">` +
+    meds.map(m => `<div class="med-card" style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:28px;">⏰</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#2d6a4f;">${m.horario} — ${m.nome}</div>
+        <div style="font-size:13px;color:#718096;">${m.dose}</div>
+      </div>
+    </div>`).join('') + `</div>`;
+}
+
+// ===== PROGRESSO =====
+function renderProgresso() {
+  const meds = LS.get('meds') || defaultMeds();
+  const total = meds.length;
+  const taken = meds.filter(m => state.medStatus && state.medStatus[m.id] === 'taken').length;
+  const medPct = total > 0 ? Math.round((taken/total)*100) : 0;
+  const orientPct = 90;
+  const atividPct = 70;
+  const el = document.getElementById('progresso-body');
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      ${progressItem('💊 Medicamentos', medPct)}
+      ${progressItem('📋 Orientações compreendidas', orientPct)}
+      ${progressItem('🏠 Atividades realizadas', atividPct)}
+    </div>
+    <div style="background:#e8f5e9;border-radius:14px;padding:16px;margin-top:16px;text-align:center;">
+      <p style="font-size:20px;font-weight:800;color:#2d6a4f;margin:0 0 8px;">Você está evoluindo!</p>
+      <p style="font-size:14px;color:#276749;margin:0;">O objetivo é ajudá-lo a realizar com segurança aquilo que consegue fazer sozinho.</p>
+    </div>
+    <p style="text-align:center;font-size:12px;font-style:italic;color:#40916c;margin-top:12px;">"Mais autonomia. Mais segurança. Cuidado que continua em casa."</p>
+  `;
+}
+function progressItem(label, pct) {
+  return `<div>
+    <div style="font-size:15px;font-weight:600;color:#1a3a30;margin-bottom:4px;">${label}</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div style="text-align:right;font-size:12px;color:#718096;">${pct}%</div>
+  </div>`;
+}
+
+// ===== PERFIL =====
+function renderPerfil() {
+  document.getElementById('perfil-nome').textContent = state.nome || 'Paciente';
+  document.getElementById('perfil-codigo').textContent = `Código: ALTA:${state.codigo}`;
+  document.getElementById('perfil-nome-input').value = state.nome || '';
+}
+function salvarPerfil() {
+  const v = document.getElementById('perfil-nome-input').value.trim();
+  if (v) { state.nome = v; saveState(); renderPerfil(); alert('Nome atualizado!'); }
+}
+function logout() {
+  if (confirm('Deseja sair?')) { state.loggedIn = false; state.codigo = ''; saveState(); go('s-splash'); }
+}
+
+// ===== EU ENTENDI =====
+function checkEntendi() {
+  const qs = ['eq1','eq2','eq3'];
+  const missing = qs.some(q => !choices[q]);
+  const err = document.getElementById('eq-error');
+  if (missing) { err.style.display='block'; return; }
+  err.style.display='none';
+  const allGood = choices.eq2 && choices.eq2.includes('Sim') && choices.eq3 && choices.eq3.includes('Sim');
+  const res = document.getElementById('entendi-result');
+  res.style.display='block';
+  if (allGood) {
+    res.innerHTML = `<div style="background:#c6f6d5;border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:32px;">✅</div>
+      <h3 style="color:#22543d;">Muito bem! Você entendeu as orientações.</h3>
+    </div>`;
+  } else {
+    res.innerHTML = `<div style="background:#feebc8;border-radius:14px;padding:16px;text-align:center;">
+      <h3 style="color:#7b341e;margin:0 0 8px;">💚 Vamos revisar?</h3>
+      <p style="color:#7b341e;font-size:14px;margin:0 0 10px;">Você pode assistir novamente à orientação.</p>
+      <button class="btn-outline" onclick="go('s-meexplique')">💚 Rever explicação</button>
+    </div>`;
+  }
+}
+
+// ===== ENCERRAMENTO =====
+function confirmarEncerramento() {
+  if (confirm('Deseja finalizar seu acompanhamento pelo ALTA+?')) go('s-fim');
+}
+
+// ===== ACESSIBILIDADE =====
+function falarTexto(texto) {
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'pt-BR';
+    speechSynthesis.speak(u);
+  } else { alert('Recurso de voz não disponível neste dispositivo.'); }
+}
+
+function aumentarTexto() {
+  state.fontSize = state.fontSize >= 1.4 ? 1 : state.fontSize + 0.1;
+  document.body.style.fontSize = (state.fontSize * 16) + 'px';
+  saveState();
+}
+
+// ===== INIT =====
+loadState();
+if (state.loggedIn) {
+  const hasAval = Object.keys(state.avalRespostas).length >= 4;
+  go(hasAval ? 's-home' : 's-aval-intro');
+} else {
+  go('s-splash');
+}
+</script>
+</body>
+</html>
